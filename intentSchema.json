@@ -1,0 +1,13 @@
+{
+  "intents": [
+    {
+      "intent": "CocktailIntent",
+      "slots": [
+        {
+          "name": "CocktailName",
+          "type": "GER_COCKTAIL"
+        }
+      ]
+    }
+  ]
+}
