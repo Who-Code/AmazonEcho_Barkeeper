@@ -111,8 +111,12 @@ function getCocktail(cName,response) {
         body += chunk;
       })
       res.on('end',function(){
-        console.log("Response: " + res.statusCode);
-        response(res.statusCode + " und " + body);
+        var cObj = JSON.parse(body);
+        var instruction = cObj.rsp.recipes.recipe["@attributes"].instruction;
+        var componentsObj = cObj.rsp.recipes.recipe.components.component;
+        var componentStr = "";
+
+        response("Bereite den Cocktail dann folgendermaßen zu." + instruction);
       })
 
     }).on('error', function (e) {
