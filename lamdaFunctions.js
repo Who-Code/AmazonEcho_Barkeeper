@@ -116,7 +116,14 @@ function getCocktail(cName,response) {
         var componentsObj = cObj.rsp.recipes.recipe.components.component;
         var componentStr = "";
 
-        response("Bereite den Cocktail dann folgendermaßen zu." + instruction);
+        for(var i=0;i<componentsObj.length;i++){
+          componentStr += componentsObj[i]["@attributes"].amount + " ";
+          componentStr += componentsObj[i]["@attributes"].unit + " ";
+          componentStr += componentsObj[i]["@attributes"].name + ", ";
+        }
+
+
+        response("Für den Cocktail benötigen Sie " + componentStr + "Bereite den Cocktail dann folgendermaßen zu. " + instruction);
       })
 
     }).on('error', function (e) {
