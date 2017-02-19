@@ -86,6 +86,7 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 function handleCocktailRequest(intent, session, callback) {
     var cName = intent.slots.CocktailName.value;
+    cName = cName.replace(/\s+/g, '_');
 
     getCocktail(cName, function (response){
       callback(session.attributes,
@@ -100,7 +101,7 @@ function getCocktail(cName,response) {
     var options = {
         host: 'www.cocktailberater.de',
         port: 80,
-        path: '/website/recipe/index/search_type/tag/search/'+cName+'?format=json',
+        path: '/rezept/'+cName+'?format=json',
         agent: false,
         json:true
     };
@@ -112,8 +113,8 @@ function getCocktail(cName,response) {
       })
       res.on('end',function(){
         var cObj = JSON.parse(body);
-        var instruction = cObj.rsp.recipes.recipe["@attributes"].instruction;
-        var componentsObj = cObj.rsp.recipes.recipe.components.component;
+        var instruction = cObj.rsp.recipe["@attributes"].instruction;
+        var componentsObj = cObj.rsp.recipe.components.component;
         var componentStr = "";
 
         for(var i=0;i<componentsObj.length;i++){
