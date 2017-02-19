@@ -4,7 +4,7 @@ exports.handler = function (event, context) {
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
 
-     if (event.session.application.applicationId !== "amzn1.ask.skill.c3fa0ae9-a294-4668-9f95-e0f584a50f90") {
+     if (event.session.application.applicationId !== "amzn1.ask.skill.612fe8d6-4971-4b6d-8941-bf7c7b63a299") {
          context.fail("Ungültige Anwendungs ID");
       }
 
@@ -86,22 +86,39 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 function handleCocktailRequest(intent, session, callback) {
     var cName = intent.slots.CocktailName.value;
+
+    getCocktail(cName, function (response){
+      callback(session.attributes,
+          buildSpeechletResponseWithoutCard(response, "Möchtest du zu weiteren Cocktails Informationen ?", "false"));
+    })
+
+}
+
+function getCocktail(cName,response) {
+
+    var http = require('http');
     var options = {
-      hostname: 'www.cocktailberater.de',
-      port: app.get('port'),
-      path: '/website/recipe/index/search_type/tag/search/'+cName+'?format=json',
-      method: 'GET',
-      json:true
-    }
-    var responseStr = "Keine Antwort";
-    request(options, function(error, response, body)
-    {
-    if(error) console.log(error);
-    else responseStr = body;
+        host: 'www.cocktailberater.de',
+        port: 80,
+        path: '/website/recipe/index/search_type/tag/search/'+cName+'?format=json',
+        agent: false,
+        json:true
+    };
+
+    http.get(options, function (res) {
+      var body = '';
+      res.on('data',function(chunk){
+        body += chunk;
+      })
+      res.on('end',function(){
+        console.log("Response: " + res.statusCode);
+        response(res.statusCode + " und " + body);
+      })
+
+    }).on('error', function (e) {
+        console.log("Error message: " + e.message);
     });
 
-    callback(session.attributes,
-        buildSpeechletResponseWithoutCard(responseStr, "Möchtest du zu weiteren Cocktails Informationen ?", "false"));
 }
 function handleStopRequest(intent, session, callback) {
     callback(session.attributes,
